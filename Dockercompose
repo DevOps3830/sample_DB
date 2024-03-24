@@ -1,0 +1,27 @@
+version: '3.8'
+services:
+  mariadb:
+    image: mariadb:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: mysecretrootpassword
+      MYSQL_DATABASE: myappdb
+      MYSQL_USER: myappuser
+      MYSQL_PASSWORD: myapppassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+      - ./initdb.sql:/docker-entrypoint-initdb.d/init-db.sql
+  app:
+    build: .
+    depends_on:
+      - mariadb
+    environment:
+      DB_HOST: mariadb
+      DB_NAME: myappdb
+      DB_USER: myappuser
+      DB_PASSWORD: myapppassword
+    ports:
+      - "5000:5000"
+volumes:
+  mariadb_data:
